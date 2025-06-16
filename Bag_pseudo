@@ -1,0 +1,167 @@
+Class Structure
+CLASS Bag<T>
+  PRIVATE Map<T, Integer> items
+  PRIVATE int totalSize  
+END CLASS
+
+Constructor Algorithm
+BEGIN constructor()
+  CREATE new HashMap for items
+  SET totalSize to 0
+END constructor
+
+Add Method Algorithm
+BEGIN add(item)
+  IF item exists in items map THEN
+    GET current count of item
+    INCREMENT count by 1
+    UPDATE item count in map
+  ELSE
+    ADD item to map with count 1
+  END IF
+  INCREMENT totalSize by 1
+END add
+
+Remove Method Algorithm
+BEGIN remove(item)
+  IF item exists in items map THEN
+    GET current count of item
+    IF count > 1 THEN
+      DECREMENT count by 1
+      UPDATE item count in map
+    ELSE
+      REMOVE item from map completely
+    END IF
+    DECREMENT totalSize by 1
+  END IF
+END remove
+
+Contains Method Algorithm
+BEGIN contains(item)
+  RETURN whether item exists in items map
+END contains
+
+Count Method Algorithm
+BEGIN count(item)
+  IF item exists in items map THEN
+    RETURN count of item
+  ELSE
+    RETURN 0
+  END IF
+END count
+
+Size Method Algorithm
+BEGIN size()
+  RETURN totalSize
+END size
+
+UniqueSize Method Algorithm
+BEGIN uniqueSize()
+  RETURN size of items map (number of keys)
+END uniqueSize
+IsEmpty Method Algorithm
+BEGIN isEmpty()
+  RETURN totalSize equals 0
+END isEmpty
+GetUniqueItems Method Algorithm
+BEGIN getUniqueItems()
+  CREATE new HashSet from items map keys
+  RETURN the HashSet
+END getUniqueItems
+
+Clear Method Algorithm
+BEGIN clear()
+  CLEAR items map
+  SET totalSize to 0
+END clear
+ToString Method Algorithm
+BEGIN toString()
+  IF bag is empty THEN
+    RETURN "Bag is empty"
+  END IF
+  
+  CREATE StringBuilder
+  APPEND "Bag contents: " to StringBuilder
+  
+  GET all keys from items map
+  TRY to sort keys (if comparable)
+  
+  FOR each key in sorted keys
+    GET count of key
+    APPEND key and count to StringBuilder
+    IF not last item THEN
+      APPEND ", " to StringBuilder
+    END IF
+  END FOR
+  
+  APPEND total size information to StringBuilder
+  RETURN StringBuilder as string
+END toString
+
+Main Method Algorithm (Interactive Testing)
+BEGIN main()
+  CREATE new Bag instance
+  CREATE Scanner for user input
+  
+  PRINT usage instructions
+  
+  WHILE true
+    PRINT prompt
+    READ user input line
+    
+    IF input is empty THEN
+      CONTINUE to next iteration
+    END IF
+    
+    SPLIT input into command and argument
+    
+    SWITCH on command
+      CASE "add":
+        IF argument provided THEN
+          CALL add method with argument
+          PRINT success message
+        ELSE
+          PRINT usage message
+        END IF
+        
+      CASE "remove":
+        IF argument provided THEN
+          IF bag contains argument THEN
+            CALL remove method with argument
+            PRINT success message
+          ELSE
+            PRINT item not found message
+          END IF
+        ELSE
+          PRINT usage message
+        END IF
+        
+      CASE "contains":
+        IF argument provided THEN
+          CALL contains method with argument
+          PRINT result
+        ELSE
+          PRINT usage message
+        END IF
+        
+      CASE "count":
+        IF argument provided THEN
+          CALL count method with argument
+          PRINT result
+        ELSE
+          PRINT usage message
+        END IF
+        
+      CASE "display":
+        PRINT bag contents using toString
+        
+      CASE "exit":
+        PRINT goodbye message
+        CLOSE scanner
+        RETURN from method
+        
+      DEFAULT:
+        PRINT unknown command message
+    END SWITCH
+  END WHILE
+END main
