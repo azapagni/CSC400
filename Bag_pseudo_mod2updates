@@ -1,0 +1,20 @@
+Merge method
+ALGORITHM merge(otherBag)
+BEGIN
+    FOR each item in otherBag.items.keySet() DO
+        count = otherBag.count(item)
+        FOR i = 1 to count DO
+            this.add(item)
+        END FOR
+    END FOR
+END
+
+Distinct method
+ALGORITHM distinct()
+BEGIN
+    newBag = new Bag<T>()
+    FOR each item in this.items.keySet() DO
+        newBag.add(item)  // Add only once regardless of original count
+    END FOR
+    RETURN newBag
+END
