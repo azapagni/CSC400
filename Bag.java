@@ -72,6 +72,25 @@ public class Bag<T> {
         items.clear();
         totalSize = 0;
     }
+
+    // Merge elements of the other bag into the current one
+    public void merge(Bag<T> otherBag) {
+        for (T item : otherBag.items.keySet()) {
+            int count = otherBag.count(item);
+            for (int i = 0; i < count; i++) {
+                this.add(item);
+            }
+        }
+    }
+
+    // Create a new bag that contains only distinct elements from current bag
+    public Bag<T> distinct() {
+        Bag<T> distinctBag = new Bag<>();
+        for (T item : items.keySet()) {
+            distinctBag.add(item);
+        }
+        return distinctBag;
+    }
     
     // String representation of the bag showing items and their counts
     @Override
@@ -107,13 +126,16 @@ public class Bag<T> {
     // Simple interactive main method for testing the Bag class
     // Users can input commands to test bag operations
     // Usage: java Bag
-    // Commands: add <item>, remove <item>, contains <item>, count <item>, display, exit
+    // Commands: add <item>, remove <item>, contains <item>, count <item>, size, merge <bag2>, distinct, display, exit
     public static void main(String[] args) {
         Bag<String> bag = new Bag<>();
+        Bag<String> bag2 = new Bag<>(); // Second bag for merge operations
         Scanner scanner = new Scanner(System.in);
         
         System.out.println("Simple Bag Tester - Enter commands:");
-        System.out.println("add <item> | remove <item> | contains <item> | count <item> | display | exit");
+        System.out.println("add <item> | remove <item> | contains <item> | count <item> | size | merge | distinct | display | exit");
+        System.out.println("Note: 'merge' will merge bag2 into the main bag");
+        System.out.println("To add to bag2, first run: add2 <item> commands");
         
         while (true) {
             System.out.print("> ");
@@ -131,6 +153,15 @@ public class Bag<T> {
                         System.out.println("Added: " + parts[1]);
                     } else {
                         System.out.println("Usage: add <item>");
+                    }
+                    break;
+                    
+                case "add2":
+                    if (parts.length > 1) {
+                        bag2.add(parts[1]);
+                        System.out.println("Added to bag2: " + parts[1]);
+                    } else {
+                        System.out.println("Usage: add2 <item>");
                     }
                     break;
                     
@@ -163,8 +194,32 @@ public class Bag<T> {
                     }
                     break;
                     
+                case "size":
+                    System.out.println("Total size (including duplicates): " + bag.size());
+                    break;
+                    
+                case "merge":
+                    if (bag2.isEmpty()) {
+                        System.out.println("Bag2 is empty. Use 'add2 <item>' to add items to bag2 first.");
+                    } else {
+                        System.out.println("Merging bag2 into main bag...");
+                        System.out.println("Bag2 contents: " + bag2);
+                        bag.merge(bag2);
+                        System.out.println("Merge complete!");
+                    }
+                    break;
+                    
+                case "distinct":
+                    Bag<String> distinctBag = bag.distinct();
+                    System.out.println("Original bag: " + bag);
+                    System.out.println("Distinct bag: " + distinctBag);
+                    break;
+                    
                 case "display":
-                    System.out.println(bag);
+                    System.out.println("Main bag: " + bag);
+                    if (!bag2.isEmpty()) {
+                        System.out.println("Bag2: " + bag2);
+                    }
                     break;
                     
                 case "exit":
@@ -173,7 +228,7 @@ public class Bag<T> {
                     return;
                     
                 default:
-                    System.out.println("Unknown command. Try: add, remove, contains, count, display, exit");
+                    System.out.println("Unknown command. Try: add, add2, remove, contains, count, size, merge, distinct, display, exit");
             }
         }
     }
