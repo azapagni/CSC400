@@ -1,0 +1,154 @@
+Main Algorithm
+ALGORITHM InfixCalculator
+INPUT: String expression (infix notation)
+OUTPUT: Double result
+
+BEGIN
+    IF expression is null OR empty THEN
+        THROW "Expression cannot be empty"
+    END IF
+    
+    expression = removeSpaces(expression)
+    
+    IF NOT isValidExpression(expression) THEN
+        THROW "Invalid characters in expression"
+    END IF
+    
+    postfixExpression = convertInfixToPostfix(expression)
+    result = evaluatePostfix(postfixExpression)
+    
+    RETURN result
+END
+Convert Infix to Postfix (Shunting Yard Algorithm)
+ALGORITHM convertInfixToPostfix
+INPUT: String infix
+OUTPUT: String postfix
+
+BEGIN
+    CREATE empty Stack operatorStack
+    CREATE empty StringBuilder postfix
+    
+    FOR each character c in infix DO
+        IF c is digit THEN
+            number = ""
+            WHILE current position has digit OR decimal point DO
+                number = number + current character
+                move to next character
+            END WHILE
+            postfix = postfix + number + " "
+            
+        ELSE IF c is '(' THEN
+            operatorStack.push(c)
+            
+        ELSE IF c is ')' THEN
+            WHILE operatorStack is not empty AND top is not '(' DO
+                postfix = postfix + operatorStack.pop() + " "
+            END WHILE
+            IF operatorStack is empty THEN
+                THROW "Mismatched parentheses"
+            END IF
+            operatorStack.pop() // remove the '('
+            
+        ELSE IF c is operator THEN
+            WHILE operatorStack is not empty AND 
+                  top is not '(' AND 
+                  precedence(top) >= precedence(c) DO
+                postfix = postfix + operatorStack.pop() + " "
+            END WHILE
+            operatorStack.push(c)
+        END IF
+    END FOR
+    
+    WHILE operatorStack is not empty DO
+        IF top is '(' OR top is ')' THEN
+            THROW "Mismatched parentheses"
+        END IF
+        postfix = postfix + operatorStack.pop() + " "
+    END WHILE
+    
+    RETURN postfix
+END
+Evaluate Postfix Expression
+ALGORITHM evaluatePostfix
+INPUT: String postfix
+OUTPUT: Double result
+
+BEGIN
+    CREATE empty Stack numberStack
+    tokens = split postfix by spaces
+    
+    FOR each token in tokens DO
+        IF token is number THEN
+            numberStack.push(parseDouble(token))
+            
+        ELSE IF token is operator THEN
+            IF numberStack.size() < 2 THEN
+                THROW "Invalid expression: insufficient operands"
+            END IF
+            
+            b = numberStack.pop()
+            a = numberStack.pop()
+            result = performOperation(a, b, token)
+            numberStack.push(result)
+        END IF
+    END FOR
+    
+    IF numberStack.size() != 1 THEN
+        THROW "Invalid expression: too many operands"
+    END IF
+    
+    RETURN numberStack.pop()
+END
+Perform Arithmetic Operation
+ALGORITHM performOperation
+INPUT: Double a, Double b, Character operator
+OUTPUT: Double result
+
+BEGIN
+    SWITCH operator DO
+        CASE '+': RETURN a + b
+        CASE '-': RETURN a - b
+        CASE '*': RETURN a * b
+        CASE '/': 
+            IF b == 0 THEN THROW "Division by zero"
+            RETURN a / b
+        CASE '%': 
+            IF b == 0 THEN THROW "Modulo by zero"
+            RETURN a % b
+        DEFAULT: THROW "Unknown operator"
+    END SWITCH
+END
+Helper Functions
+ALGORITHM getPrecedence
+INPUT: Character operator
+OUTPUT: Integer precedence
+
+BEGIN
+    SWITCH operator DO
+        CASE '+', '-': RETURN 1
+        CASE '*', '/', '%': RETURN 2
+        DEFAULT: RETURN 0
+    END SWITCH
+END
+
+ALGORITHM isOperator
+INPUT: Character c
+OUTPUT: Boolean
+
+BEGIN
+    RETURN c is one of {'+', '-', '*', '/', '%'}
+END
+
+ALGORITHM isValidExpression
+INPUT: String expression
+OUTPUT: Boolean
+
+BEGIN
+    FOR each character c in expression DO
+        IF c is not digit AND c is not operator AND 
+           c is not '(' AND c is not ')' AND c is not '.' THEN
+            RETURN false
+        END IF
+    END FOR
+    RETURN true
+END
