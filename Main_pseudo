@@ -1,0 +1,91 @@
+Node Structure
+
+Node:
+    data: integer
+    next: Node pointer
+
+
+CustomLinkedList Class
+
+CustomLinkedList:
+    head: Node pointer
+    size: integer
+    
+    constructor():
+        head = null
+        size = 0
+    
+    insert(data):
+        newNode = new Node(data)
+        if head == null:
+            head = newNode
+        else:
+            current = head
+            while current.next != null:
+                current = current.next
+            current.next = newNode
+        size++
+    
+    delete(data):
+        if head == null:
+            return false
+        if head.data == data:
+            head = head.next
+            size--
+            return true
+        current = head
+        while current.next != null:
+            if current.next.data == data:
+                current.next = current.next.next
+                size--
+                return true
+            current = current.next
+        return false
+    
+    iterator():
+        return new LinkedListIterator()
+
+
+Iterator Class
+
+LinkedListIterator:
+    current: Node pointer
+    
+    constructor():
+        current = head
+    
+    hasNext():
+        return current != null
+    
+    next():
+        if not hasNext():
+            throw exception
+        data = current.data
+        current = current.next
+        return data
+
+
+File Reading Method
+
+loadFromFile(filename):
+    open file
+    while file has integers:
+        data = read next integer
+        insert(data)
+    close file
+
+
+Main Program
+
+main():
+    list = new CustomLinkedList()
+    list.insert(10)
+    list.insert(20)
+    list.insert(30)
+    
+    iter = list.iterator()
+    while iter.hasNext():
+        print iter.next()
+    
+    list.delete(20)
+    list.loadFromFile("data.txt")
